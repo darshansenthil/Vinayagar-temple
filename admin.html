@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manage Announcements</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body style="padding:20px">
+
+<h2>📝 Add Announcement</h2>
+
+<textarea id="text_en" placeholder="English text" style="width:100%;height:80px;"></textarea><br><br>
+
+<textarea id="text_ta" placeholder="Tamil text" style="width:100%;height:80px;"></textarea><br><br>
+
+<button onclick="addAnnouncement()">Add</button>
+
+<hr>
+
+<h3>📋 Existing Announcements</h3>
+<ul id="list"></ul>
+
+<script>
+
+let announcements = JSON.parse(localStorage.getItem("announcements")) || [];
+
+function save(){
+  localStorage.setItem("announcements", JSON.stringify(announcements));
+}
+
+/* ADD */
+function addAnnouncement(){
+  let en = document.getElementById("text_en").value;
+  let ta = document.getElementById("text_ta").value;
+
+  if(en && ta){
+    announcements.push({text_en: en, text_ta: ta});
+    save();
+    loadList();
+  }
+}
+
+/* DELETE */
+function deleteAnnouncement(index){
+  announcements.splice(index,1);
+  save();
+  loadList();
+}
+
+/* LOAD LIST */
+function loadList(){
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  announcements.forEach((a,i)=>{
+    let li = document.createElement("li");
+    li.innerHTML = a.text_en + 
+      ` <button onclick="deleteAnnouncement(${i})">Delete</button>`;
+    list.appendChild(li);
+  });
+}
+
+loadList();
+
+</script>
+
+</body>
+</html>

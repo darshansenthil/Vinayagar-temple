@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Siddhi Vinayagar</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <img src="logo.jpg" class="logo-img">
+    <span class="logo-text" id="logo_text">Sri Siddhi Vinayagar</span>
+  </div>
+
+  <nav>
+    <a href="#history" id="nav1">History</a>
+    <a href="#announcement" id="nav2">Announcement</a>
+    <a href="#gallery" id="nav3">Gallery</a>
+    <a href="#contact" id="nav4">Contact</a>
+    <button class="lang-btn" onclick="toggleLang()">தமிழ்</button>
+  </nav>
+</header>
+
+<!-- HERO SLIDER -->
+<div class="hero">
+
+  <img src="hero1.jpeg" class="hero-img active">
+  <img src="hero2.jpeg" class="hero-img">
+  <img src="hero3.jpeg" class="hero-img">
+
+  <div class="hero-text" id="hero_text">🙏 Sri Siddhi Vinayagar 🙏</div>
+
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-box">
+  <div class="marquee">
+    <div class="marquee-content" id="marquee_text">
+      🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏 Festival updates will be announced here 🙏
+    </div>
+  </div>
+</div>
+
+<div class="section">
+
+<!-- HISTORY -->
+<div class="box" id="history">
+  <div class="box-inner">
+    <div class="box-title" id="history_title">Temple History</div>
+    <div class="box-content" id="history_text">
+      This Vinayagar temple has been worshipped for generations.
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENT -->
+<div class="box" id="announcement">
+  <div class="box-inner">
+    <div class="box-title" id="announce_title">Announcement</div>
+
+    <div class="box-content announcement-layout">
+
+      <div class="announce-text-box">
+        <p id="announce_text"></p>
+
+        <div class="announce-controls">
+          <button type="button" onclick="changeAnnouncement(-1)">❮ Prev</button>
+          <button type="button" onclick="changeAnnouncement(1)">Next ❯</button>
+        </div>
+      </div>
+
+      <div class="announce-image-box">
+        <img src="notice.jpeg" class="notice-img">
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<div class="box" id="gallery">
+  <div class="box-inner">
+    <div class="box-title" id="gallery_title">Gallery</div>
+
+    <div class="box-content">
+      <div class="slider-container">
+        <button class="arrow left" onclick="changeImage(-1)">❮</button>
+        <img id="galleryImage" src="img1.jpeg" class="gallery-img">
+        <button class="arrow right" onclick="changeImage(1)">❯</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT (UNCHANGED) -->
+<div class="box" id="contact">
+  <div class="box-inner">
+    <div class="box-title" id="contact_title">Contact</div>
+    <div class="box-content" id="contact_text">
+      📍 New Kattur,<br> Rasipuram(TK),<br> Namakkal(DT),<br> Tamil Nadu<br><br>
+      Temple Committee<br>
+      R K Senthil Kumar<br>
+      📞 9791262718
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>© 2026 Sri Siddhi Vinayagar</footer>
+
+<script>
+
+/* HERO SLIDER */
+let heroIndex = 0;
+let heroImages = document.querySelectorAll(".hero-img");
+
+function changeHero(){
+  heroImages[heroIndex].classList.remove("active");
+  heroIndex = (heroIndex + 1) % heroImages.length;
+  heroImages[heroIndex].classList.add("active");
+}
+
+setInterval(changeHero, 3000);
+
+/* IMAGE SLIDER */
+let images = ["img1.jpeg","img2.jpeg","img3.jpeg"];
+let imgIndex = 0;
+
+function changeImage(dir){
+  imgIndex = (imgIndex + dir + images.length) % images.length;
+  document.getElementById("galleryImage").src = images[imgIndex];
+}
+
+/* ANNOUNCEMENT */
+let announcements = JSON.parse(localStorage.getItem("announcements"));
+
+if(!announcements || announcements.length === 0){
+  announcements = [
+    {
+      text_en: "Festival from April 27–30. Meeting April 19 at 7PM.",
+      text_ta: "திருவிழா ஏப்ரல் 27–30 நடைபெறும். கூட்டம் 19 மாலை 7 மணி."
+    }
+  ];
+}
+
+let announceIndex = 0;
+let tamil = false;
+
+function showAnnouncement(){
+  let data = announcements[announceIndex];
+  document.getElementById("announce_text").innerText =
+    tamil ? data.text_ta : data.text_en;
+}
+
+function changeAnnouncement(dir){
+  announceIndex = (announceIndex + dir + announcements.length) % announcements.length;
+  showAnnouncement();
+}
+
+/* LANGUAGE */
+function toggleLang(){
+
+  tamil = !tamil;
+
+  document.getElementById("nav1").innerText = tamil ? "வரலாறு" : "History";
+  document.getElementById("nav2").innerText = tamil ? "அறிவிப்பு" : "Announcement";
+  document.getElementById("nav3").innerText = tamil ? "காட்சி" : "Gallery";
+  document.getElementById("nav4").innerText = tamil ? "தொடர்பு" : "Contact";
+
+  document.getElementById("hero_text").innerText =
+  tamil ? "🙏 ஸ்ரீ சித்தி விநாயகர் 🙏" : "🙏 Sri Siddhi Vinayagar 🙏";
+
+  document.getElementById("logo_text").innerText =
+  tamil ? "ஸ்ரீ சித்தி விநாயகர்" : "Sri Siddhi Vinayagar";
+
+  document.getElementById("marquee_text").innerText =
+  tamil
+  ? "🙏 ஸ்ரீ சித்தி விநாயகர் கோவிலுக்கு வரவேற்கிறோம் 🙏 விழா தகவல்கள் இங்கே அறிவிக்கப்படும் 🙏"
+  : "🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏 Festival updates will be announced here 🙏";
+
+  document.getElementById("history_title").innerText =
+  tamil ? "கோவில் வரலாறு" : "Temple History";
+
+  document.getElementById("announce_title").innerText =
+  tamil ? "அறிவிப்பு" : "Announcement";
+
+  document.getElementById("gallery_title").innerText =
+  tamil ? "கோவில் காட்சி" : "Gallery";
+
+  document.getElementById("contact_title").innerText =
+  tamil ? "தொடர்பு" : "Contact";
+
+  document.getElementById("history_text").innerText =
+  tamil
+  ? "இந்த விநாயகர் கோவில் பல ஆண்டுகளாக பக்தர்களால் வழிபடப்படுகிறது."
+  : "This Vinayagar temple has been worshipped for generations.";
+
+  document.getElementById("contact_text").innerHTML =
+  tamil
+  ? "📍 புதிய கட்டூர்,<br> ராசிபுரம்,<br> நாமக்கல்,<br> தமிழ்நாடு<br><br>Temple Committee<br>ஆர்.கே செந்தில் குமார்<br>📞 9791262718"
+  : "📍 New Kattur,<br> Rasipuram(TK),<br> Namakkal(DT),<br> Tamil Nadu<br><br>Temple Committee<br>R K Senthil Kumar<br>📞 9791262718";
+
+  showAnnouncement();
+}
+
+window.onload = showAnnouncement;
+
+</script>
+
+</body>
+</html>
