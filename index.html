@@ -25,22 +25,20 @@
   </nav>
 </header>
 
-<!-- HERO SLIDER -->
+<!-- HERO -->
 <div class="hero">
-
   <img src="hero1.jpeg" class="hero-img active">
   <img src="hero2.jpeg" class="hero-img">
   <img src="hero3.jpeg" class="hero-img">
 
   <div class="hero-text" id="hero_text">🙏 Sri Siddhi Vinayagar 🙏</div>
-
 </div>
 
 <!-- MARQUEE -->
 <div class="marquee-box">
   <div class="marquee">
     <div class="marquee-content" id="marquee_text">
-      🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏 Festival updates will be announced here 🙏 Festival Dates: April 27, 2026, to April 30, 2026; Monday through Thursday 🙏
+      🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏
     </div>
   </div>
 </div>
@@ -65,11 +63,11 @@
     <div class="box-content announcement-layout">
 
       <div class="announce-text-box">
-        <p id="announce_text"></p>
+        <p id="announce_text">Loading announcements...</p>
 
         <div class="announce-controls">
-          <button type="button" onclick="changeAnnouncement(-1)">❮ Prev</button>
-          <button type="button" onclick="changeAnnouncement(1)">Next ❯</button>
+          <button onclick="changeAnnouncement(-1)">❮ Prev</button>
+          <button onclick="changeAnnouncement(1)">Next ❯</button>
         </div>
       </div>
 
@@ -96,7 +94,7 @@
   </div>
 </div>
 
-<!-- CONTACT (UNCHANGED) -->
+<!-- CONTACT -->
 <div class="box" id="contact">
   <div class="box-inner">
     <div class="box-title" id="contact_title">Contact</div>
@@ -113,57 +111,74 @@
 
 <footer>© 2026 Sri Siddhi Vinayagar</footer>
 
-<script>
+<script type="module">
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+/* 🔥 SUPABASE CONNECTION */
+const supabase = createClient(
+  "https://swbdflvfyqoeypyafjho.supabase.co",
+  "sb_publishable_vCWREZqkWV1daC4x0AmWZA_RdfTXbIm"
+);
 
 /* HERO SLIDER */
 let heroIndex = 0;
 let heroImages = document.querySelectorAll(".hero-img");
 
-function changeHero(){
+setInterval(() => {
   heroImages[heroIndex].classList.remove("active");
   heroIndex = (heroIndex + 1) % heroImages.length;
   heroImages[heroIndex].classList.add("active");
-}
+}, 3000);
 
-setInterval(changeHero, 3000);
-
-/* IMAGE SLIDER */
+/* GALLERY */
 let images = ["img1.jpeg","img2.jpeg","img3.jpeg"];
 let imgIndex = 0;
 
-function changeImage(dir){
+window.changeImage = function(dir){
   imgIndex = (imgIndex + dir + images.length) % images.length;
   document.getElementById("galleryImage").src = images[imgIndex];
-}
+};
 
-/* ANNOUNCEMENT */
-let announcements = JSON.parse(localStorage.getItem("announcements"));
-
-if(!announcements || announcements.length === 0){
-  announcements = [
-    {
-      text_en: "Festival from April 27–30. Meeting April 19 at 7PM.",
-      text_ta: "திருவிழா ஏப்ரல் 27–30 நடைபெறும். கூட்டம் 19 மாலை 7 மணி."
-    }
-  ];
-}
-
+/* ANNOUNCEMENT DATA */
+let announcements = [];
 let announceIndex = 0;
 let tamil = false;
 
-function showAnnouncement(){
-  let data = announcements[announceIndex];
+/* LOAD FROM SUPABASE */
+async function loadAnnouncements() {
+  const { data } = await supabase
+    .from("announcements")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (data && data.length > 0) {
+    announcements = data;
+    showAnnouncement();
+  }
+}
+
+/* SHOW */
+function showAnnouncement() {
+  if (!announcements.length) return;
+
+  let a = announcements[announceIndex];
+
   document.getElementById("announce_text").innerText =
-    tamil ? data.text_ta : data.text_en;
+    tamil ? a.text_ta : a.text_en;
 }
 
-function changeAnnouncement(dir){
-  announceIndex = (announceIndex + dir + announcements.length) % announcements.length;
+/* NEXT / PREV */
+window.changeAnnouncement = function(dir){
+  if (!announcements.length) return;
+
+  announceIndex =
+    (announceIndex + dir + announcements.length) % announcements.length;
+
   showAnnouncement();
-}
+};
 
-/* LANGUAGE */
-function toggleLang(){
+/* LANGUAGE TOGGLE (UNCHANGED UI) */
+window.toggleLang = function(){
 
   tamil = !tamil;
 
@@ -180,8 +195,8 @@ function toggleLang(){
 
   document.getElementById("marquee_text").innerText =
   tamil
-  ? "🙏 ஸ்ரீ சித்தி விநாயகர் கோவிலுக்கு வரவேற்கிறோம் 🙏 விழா தகவல்கள் இங்கே அறிவிக்கப்படும் 🙏"
-  : "🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏 Festival updates will be announced here 🙏";
+  ? "🙏 ஸ்ரீ சித்தி விநாயகர் கோவிலுக்கு வரவேற்கிறோம் 🙏"
+  : "🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏";
 
   document.getElementById("history_title").innerText =
   tamil ? "கோவில் வரலாறு" : "Temple History";
@@ -190,25 +205,23 @@ function toggleLang(){
   tamil ? "அறிவிப்பு" : "Announcement";
 
   document.getElementById("gallery_title").innerText =
-  tamil ? "கோவில் காட்சி" : "Gallery";
+  tamil ? "காட்சி" : "Gallery";
 
   document.getElementById("contact_title").innerText =
   tamil ? "தொடர்பு" : "Contact";
 
   document.getElementById("history_text").innerText =
   tamil
-  ? "இந்த விநாயகர் கோவில் பல ஆண்டுகளாக பக்தர்களால் வழிபடப்படுகிறது."
-  : "This Vinayagar temple has been worshipped for generations.";
-
-  document.getElementById("contact_text").innerHTML =
-  tamil
-  ? "📍 புதிய கட்டூர்,<br> ராசிபுரம்,<br> நாமக்கல்,<br> தமிழ்நாடு<br><br>Temple Committee<br>ஆர்.கே செந்தில் குமார்<br>📞 9791262718"
-  : "📍 New Kattur,<br> Rasipuram(TK),<br> Namakkal(DT),<br> Tamil Nadu<br><br>Temple Committee<br>R K Senthil Kumar<br>📞 9791262718";
+  ? "இந்த கோவில் பல ஆண்டுகளாக வழிபடப்படுகிறது."
+  : "This temple has been worshipped for generations.";
 
   showAnnouncement();
-}
+};
 
-window.onload = showAnnouncement;
+/* INIT */
+window.onload = function(){
+  loadAnnouncements();
+};
 
 </script>
 
