@@ -153,7 +153,6 @@ text-align:center;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
-/* CENTER TEXT */
 .announce-text-box p{
 font-size:16px;
 font-weight:600;
@@ -177,7 +176,7 @@ max-width:600px;
 border-radius:10px;
 }
 
-/* CENTER BUTTONS */
+/* BUTTON CENTER */
 .announce-controls{
 display:flex;
 justify-content:center;
@@ -185,7 +184,6 @@ align-items:center;
 flex-wrap:wrap;
 }
 
-/* BUTTON */
 .announce-controls button{
 margin:5px;
 padding:8px 14px;
@@ -222,10 +220,85 @@ border-radius:50%;
 .left{left:10px;}
 .right{right:10px}
 
+/* FOOTER BASE */
 footer{
 text-align:center;
 padding:15px;
 margin-top:20px;
 background:#ff7e00;
 color:white;
+}
+
+/* FOOTER LAYOUT */
+.footer-container{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.footer-right{
+display:flex;
+justify-content:flex-end;
+}
+
+/* 🔥 DESIGNER CARD */
+.designer-card{
+background:linear-gradient(135deg, #ff7e00, #ffb347);
+padding:8px 14px;
+border-radius:12px;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+display:flex;
+flex-direction:column;
+align-items:flex-end;
+color:white;
+min-width:200px;
+position:relative;
+overflow:hidden;
+}
+
+/* LABEL */
+.designer-label{
+font-size:11px;
+opacity:0.8;
+}
+
+/* NAME */
+.designer-name{
+font-weight:bold;
+font-size:15px;
+letter-spacing:1px;
+}
+
+/* PHONE */
+.designer-phone{
+font-size:13px;
+margin-top:2px;
+}
+
+/* ✨ SHINE EFFECT */
+.designer-card::before{
+content:"";
+position:absolute;
+top:0;
+left:-75%;
+width:50%;
+height:100%;
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,255,255,0.6),
+transparent
+);
+transform:skewX(-25deg);
+}
+
+.designer-card:hover::before{
+animation:shine 1s ease forwards;
+}
+
+@keyframes shine{
+0%{ left:-75%; }
+100%{ left:125%; }
 }
