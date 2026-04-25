@@ -20,48 +20,81 @@
 <h3>📋 Existing Announcements</h3>
 <ul id="list"></ul>
 
-<script>
+<!-- SUPABASE -->
+<script type="module">
 
-let announcements = JSON.parse(localStorage.getItem("announcements")) || [];
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-function save(){
-  localStorage.setItem("announcements", JSON.stringify(announcements));
-}
+const supabase = createClient(
+  "https://swbdflvfyqoeypyafjho.supabase.co",
+  "sb_publishable_vCWREZqkWV1daC4x0AmWZA_RdfTXbIm"
+);
+
 
 /* ADD */
-function addAnnouncement(){
+async function addAnnouncement() {
   let en = document.getElementById("text_en").value;
   let ta = document.getElementById("text_ta").value;
 
-  if(en && ta){
-    announcements.push({text_en: en, text_ta: ta});
-    save();
+  if (!en || !ta) {
+    alert("Please fill both fields");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("announcements")
+    .insert([
+      { text_en: en, text_ta: ta }
+    ]);
+
+  if (!error) {
+    document.getElementById("text_en").value = "";
+    document.getElementById("text_ta").value = "";
     loadList();
+  } else {
+    alert(error.message);
   }
 }
 
+window.addAnnouncement = addAnnouncement;
+
 /* DELETE */
-function deleteAnnouncement(index){
-  announcements.splice(index,1);
-  save();
+async function deleteAnnouncement(id) {
+  await supabase
+    .from("announcements")
+    .delete()
+    .eq("id", id);
+
   loadList();
 }
 
-/* LOAD LIST */
-function loadList(){
+window.deleteAnnouncement = deleteAnnouncement;
+
+/* LOAD */
+async function loadList() {
+  const { data } = await supabase
+    .from("announcements")
+    .select("*")
+    .order("id", { ascending: false });
+
   let list = document.getElementById("list");
   list.innerHTML = "";
 
-  announcements.forEach((a,i)=>{
+  data.forEach(a => {
     let li = document.createElement("li");
-    li.innerHTML = a.text_en + 
-      ` <button onclick="deleteAnnouncement(${i})">Delete</button>`;
+    li.innerHTML = `
+      <b>${a.text_en}</b>
+      <br>
+      ${a.text_ta}
+      <br>
+      <button onclick="deleteAnnouncement(${a.id})">Delete</button>
+      <hr>
+    `;
     list.appendChild(li);
   });
 }
 
 loadList();
-
 </script>
 
 </body>
