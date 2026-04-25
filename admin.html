@@ -22,6 +22,11 @@
 
 <h3>📋 Existing Announcements</h3>
 
+<!-- COMMON UPDATE BUTTON -->
+<button onclick="updateSelectedOrder()" style="margin-bottom:15px;">
+Update Selected Order
+</button>
+
 <ul id="list" style="padding:0;"></ul>
 
 </div>
@@ -110,7 +115,7 @@ async function loadList() {
   const { data } = await supabase
     .from("announcements")
     .select("*")
-    .order("id", { ascending: false });
+    .order("display_order", { ascending: true });
 
   let list = document.getElementById("list");
   list.innerHTML = "";
@@ -120,22 +125,26 @@ async function loadList() {
   data.forEach(a => {
 
     let li = document.createElement("li");
-
     li.style.listStyle = "none";
     li.style.marginBottom = "10px";
     li.style.border = "1px solid #ddd";
     li.style.borderRadius = "8px";
 
     li.innerHTML = `
-      <div style="padding:10px;background:#fff3e0;font-weight:bold;cursor:pointer"
-        onclick="this.nextElementSibling.style.display =
-        (this.nextElementSibling.style.display === 'none' ? 'block' : 'none')">
-
-        📢 ${a.text_en}
+      <div style="padding:10px;background:#fff3e0;font-weight:bold;">
+        
+        <input type="checkbox" class="select-box" value="${a.id}">
+        
+        🔢 ${a.display_order || 0} | 📢 ${a.text_en}
       </div>
 
-      <div style="display:none;padding:10px;">
+      <div style="padding:10px;">
         <p>${a.text_ta}</p>
+
+        Order:
+        <input type="number" id="order_${a.id}" value="${a.display_order || 0}" style="width:70px;">
+        
+        <br><br>
         <button onclick="deleteAnnouncement(${a.id})">Delete</button>
       </div>
     `;
@@ -145,6 +154,28 @@ async function loadList() {
 }
 
 window.loadList = loadList;
+
+/* ================= COMMON ORDER UPDATE ================= */
+async function updateSelectedOrder() {
+
+  let checkboxes = document.querySelectorAll(".select-box:checked");
+
+  for (let cb of checkboxes) {
+
+    let id = cb.value;
+    let order = document.getElementById("order_" + id).value;
+
+    await supabase
+      .from("announcements")
+      .update({ display_order: order })
+      .eq("id", id);
+  }
+
+  alert("✅ Selected Orders Updated");
+  loadList();
+}
+
+window.updateSelectedOrder = updateSelectedOrder;
 
 async function deleteAnnouncement(id) {
 
@@ -214,7 +245,7 @@ async function updateMarquee() {
 
 window.updateMarquee = updateMarquee;
 
-/* ================= ADDRESS & CONTACT (ONLY FIX APPLIED) ================= */
+/* ================= ADDRESS & CONTACT ================= */
 async function updateContact() {
 
   let address_en = document.getElementById("address_en").value;
@@ -222,23 +253,35 @@ async function updateContact() {
   let contact_en = document.getElementById("contact_en").value;
   let contact_ta = document.getElementById("contact_ta").value;
 
-  /* 🔥 FIX: HANDLE ADDRESS SEPARATELY */
-  await supabase
+  const { data } = await supabase
     .from("temple_content")
-    .upsert({
-      section: "address",
-      address_en: address_en,
-      address_ta: address_ta
-    }, { onConflict: ['section'] });
+    .select("*")
+    .eq("section", "contact");
 
-  /* 🔥 EXISTING CONTACT (UNCHANGED) */
-  await supabase
-    .from("temple_content")
-    .upsert({
-      section: "contact",
-      contact_en: contact_en,
-      contact_ta: contact_ta
-    }, { onConflict: ['section'] });
+  if (data && data.length > 0) {
+
+    await supabase
+      .from("temple_content")
+      .update({
+        address_en: address_en,
+        address_ta: address_ta,
+        contact_en: contact_en,
+        contact_ta: contact_ta
+      })
+      .eq("section", "contact");
+
+  } else {
+
+    await supabase
+      .from("temple_content")
+      .insert({
+        section: "contact",
+        address_en: address_en,
+        address_ta: address_ta,
+        contact_en: contact_en,
+        contact_ta: contact_ta
+      });
+  }
 
   alert("📍 Address & Contact Updated!");
 }
