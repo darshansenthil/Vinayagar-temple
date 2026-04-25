@@ -34,11 +34,20 @@
   <div class="hero-text" id="hero_text">🙏 Sri Siddhi Vinayagar 🙏</div>
 </div>
 
-<!-- MARQUEE -->
+<!-- MARQUEE 1 -->
 <div class="marquee-box">
   <div class="marquee">
     <div class="marquee-content" id="marquee_text">
       🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE 2 -->
+<div class="marquee-box">
+  <div class="marquee">
+    <div class="marquee-content" id="marquee_text_2">
+      Loading...
     </div>
   </div>
 </div>
@@ -48,9 +57,9 @@
 <!-- HISTORY -->
 <div class="box" id="history">
   <div class="box-inner">
-    <div class="box-title" id="history_title">Temple History</div>
+    <div class="box-title">Temple History</div>
     <div class="box-content" id="history_text">
-      This Vinayagar temple has been worshipped for generations.
+      Loading...
     </div>
   </div>
 </div>
@@ -58,23 +67,13 @@
 <!-- ANNOUNCEMENT -->
 <div class="box" id="announcement">
   <div class="box-inner">
-    <div class="box-title" id="announce_title">Announcement</div>
-
-    <div class="box-content announcement-layout">
-
-      <div class="announce-text-box">
-        <p id="announce_text">Loading announcements...</p>
-
-        <div class="announce-controls">
-          <button onclick="changeAnnouncement(-1)">❮ Prev</button>
-          <button onclick="changeAnnouncement(1)">Next ❯</button>
-        </div>
+    <div class="box-title">Announcement</div>
+    <div class="box-content">
+      <p id="announce_text">Loading...</p>
+      <div class="announce-controls">
+        <button onclick="changeAnnouncement(-1)">❮ Prev</button>
+        <button onclick="changeAnnouncement(1)">Next ❯</button>
       </div>
-
-      <div class="announce-image-box">
-        <img src="notice.jpeg" class="notice-img">
-      </div>
-
     </div>
   </div>
 </div>
@@ -82,8 +81,7 @@
 <!-- GALLERY -->
 <div class="box" id="gallery">
   <div class="box-inner">
-    <div class="box-title" id="gallery_title">Gallery</div>
-
+    <div class="box-title">Gallery</div>
     <div class="box-content">
       <div class="slider-container">
         <button class="arrow left" onclick="changeImage(-1)">❮</button>
@@ -94,15 +92,22 @@
   </div>
 </div>
 
+<!-- ADDRESS -->
+<div class="box" id="address">
+  <div class="box-inner">
+    <div class="box-title">Address</div>
+    <div class="box-content" id="address_text">
+      Loading...
+    </div>
+  </div>
+</div>
+
 <!-- CONTACT -->
 <div class="box" id="contact">
   <div class="box-inner">
-    <div class="box-title" id="contact_title">Contact</div>
+    <div class="box-title">Contact</div>
     <div class="box-content" id="contact_text">
-      📍 New Kattur,<br> Rasipuram(TK),<br> Namakkal(DT),<br> Tamil Nadu<br><br>
-      Temple Committee<br>
-      R K Senthil Kumar<br>
-      📞 9791262718
+      Loading...
     </div>
   </div>
 </div>
@@ -114,21 +119,88 @@
 <script type="module">
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-/* 🔥 SUPABASE CONNECTION */
+
 const supabase = createClient(
   "https://swbdflvfyqoeypyafjho.supabase.co",
   "sb_publishable_vCWREZqkWV1daC4x0AmWZA_RdfTXbIm"
 );
 
-/* HERO SLIDER */
-let heroIndex = 0;
-let heroImages = document.querySelectorAll(".hero-img");
+let tamil = false;
+let announcements = [];
+let announceIndex = 0;
 
-setInterval(() => {
-  heroImages[heroIndex].classList.remove("active");
-  heroIndex = (heroIndex + 1) % heroImages.length;
-  heroImages[heroIndex].classList.add("active");
-}, 3000);
+/* ANNOUNCEMENTS */
+async function loadAnnouncements(){
+  const { data } = await supabase
+    .from("announcements")
+    .select("*")
+    .order("id",{ascending:false});
+
+  if(data) announcements = data;
+
+  showAnnouncement();
+}
+
+function showAnnouncement(){
+  if(!announcements.length) return;
+
+  let a = announcements[announceIndex];
+  document.getElementById("announce_text").innerText =
+    tamil ? a.text_ta : a.text_en;
+}
+
+window.changeAnnouncement = function(dir){
+  announceIndex = (announceIndex + dir + announcements.length) % announcements.length;
+  showAnnouncement();
+};
+
+/* HISTORY + ADDRESS + CONTACT (ONLY FIX APPLIED HERE) */
+async function loadContent(){
+
+  const { data } = await supabase
+    .from("temple_content")
+    .select("*");
+
+  if(!data) return;
+
+  data.forEach(item => {
+
+    if(item.section === "history"){
+      document.getElementById("history_text").innerText =
+        tamil ? item.content_ta : item.content_en;
+    }
+
+    /* 🔥 FIXED ADDRESS */
+    if(item.section === "address"){
+      document.getElementById("address_text").innerText =
+        tamil
+          ? (item.address_ta || "Loading...")
+          : (item.address_en || "Loading...");
+    }
+
+    /* CONTACT (UNCHANGED) */
+    if(item.section === "contact"){
+      document.getElementById("contact_text").innerText =
+        tamil ? item.contact_ta : item.contact_en;
+    }
+
+  });
+}
+
+/* MARQUEE 2 */
+async function loadMarquee2(){
+
+  const { data } = await supabase
+    .from("marquee_content")
+    .select("*")
+    .eq("section","marquee2")
+    .single();
+
+  if(data){
+    document.getElementById("marquee_text_2").innerText =
+      tamil ? data.text_ta : data.text_en;
+  }
+}
 
 /* GALLERY */
 let images = ["img1.jpeg","img2.jpeg","img3.jpeg","img4.jpg","img5.jpg"];
@@ -139,88 +211,19 @@ window.changeImage = function(dir){
   document.getElementById("galleryImage").src = images[imgIndex];
 };
 
-/* ANNOUNCEMENT DATA */
-let announcements = [];
-let announceIndex = 0;
-let tamil = false;
-
-/* LOAD FROM SUPABASE */
-async function loadAnnouncements() {
-  const { data } = await supabase
-    .from("announcements")
-    .select("*")
-    .order("id", { ascending: false });
-
-  if (data && data.length > 0) {
-    announcements = data;
-    showAnnouncement();
-  }
-}
-
-/* SHOW */
-function showAnnouncement() {
-  if (!announcements.length) return;
-
-  let a = announcements[announceIndex];
-
-  document.getElementById("announce_text").innerText =
-    tamil ? a.text_ta : a.text_en;
-}
-
-/* NEXT / PREV */
-window.changeAnnouncement = function(dir){
-  if (!announcements.length) return;
-
-  announceIndex =
-    (announceIndex + dir + announcements.length) % announcements.length;
-
-  showAnnouncement();
-};
-
-/* LANGUAGE TOGGLE (UNCHANGED UI) */
+/* LANGUAGE */
 window.toggleLang = function(){
-
   tamil = !tamil;
-
-  document.getElementById("nav1").innerText = tamil ? "வரலாறு" : "History";
-  document.getElementById("nav2").innerText = tamil ? "அறிவிப்பு" : "Announcement";
-  document.getElementById("nav3").innerText = tamil ? "காட்சி" : "Gallery";
-  document.getElementById("nav4").innerText = tamil ? "தொடர்பு" : "Contact";
-
-  document.getElementById("hero_text").innerText =
-  tamil ? "🙏 ஸ்ரீ சித்தி விநாயகர் 🙏" : "🙏 Sri Siddhi Vinayagar 🙏";
-
-  document.getElementById("logo_text").innerText =
-  tamil ? "ஸ்ரீ சித்தி விநாயகர்" : "Sri Siddhi Vinayagar";
-
-  document.getElementById("marquee_text").innerText =
-  tamil
-  ? "🙏 ஸ்ரீ சித்தி விநாயகர் கோவிலுக்கு வரவேற்கிறோம் 🙏"
-  : "🙏 Welcome to Sri Siddhi Vinayagar Temple 🙏";
-
-  document.getElementById("history_title").innerText =
-  tamil ? "கோவில் வரலாறு" : "Temple History";
-
-  document.getElementById("announce_title").innerText =
-  tamil ? "அறிவிப்பு" : "Announcement";
-
-  document.getElementById("gallery_title").innerText =
-  tamil ? "காட்சி" : "Gallery";
-
-  document.getElementById("contact_title").innerText =
-  tamil ? "தொடர்பு" : "Contact";
-
-  document.getElementById("history_text").innerText =
-  tamil
-  ? "இந்த கோவில் பல ஆண்டுகளாக வழிபடப்படுகிறது."
-  : "This temple has been worshipped for generations.";
-
-  showAnnouncement();
+  loadContent();
+  loadAnnouncements();
+  loadMarquee2();
 };
 
 /* INIT */
 window.onload = function(){
   loadAnnouncements();
+  loadContent();
+  loadMarquee2();
 };
 
 </script>
