@@ -9,7 +9,6 @@ font-family:Arial, sans-serif;
 background:linear-gradient(to bottom,#fff5e6,#ffe0b2);
 }
 
-/* HEADER */
 header{
 position:sticky;
 top:0;
@@ -52,7 +51,6 @@ border-radius:8px;
 cursor:pointer;
 }
 
-/* HERO */
 .hero{
 position:relative;
 height:300px;
@@ -84,7 +82,6 @@ font-size:24px;
 text-shadow:0 0 10px black;
 }
 
-/* MARQUEE */
 .marquee-box{
 background:#fff3cd;
 padding:10px;
@@ -111,13 +108,11 @@ animation:scroll 15s linear infinite;
 100%{ transform:translateX(-100%); }
 }
 
-/* SECTION */
 .section{
 width:95%;
 margin:20px auto;
 }
 
-/* BOX */
 .box{
 margin-top:20px;
 padding:2px;
@@ -142,7 +137,7 @@ padding:15px;
 line-height:1.6;
 }
 
-/* 🔥 ANNOUNCEMENT NEW BOX STYLE */
+/* ANNOUNCEMENT */
 #announcement .box-content{
 display:flex;
 flex-direction:column;
@@ -151,16 +146,25 @@ gap:15px;
 
 /* TEXT BOX */
 .announce-text-box{
-background:linear-gradient(to right,#fff5e6,#ffe0b2); /* match site */
+background:linear-gradient(to right,#fff5e6,#ffe0b2);
 padding:15px;
 border-radius:10px;
 text-align:center;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
+/* CENTER TEXT */
+.announce-text-box p{
+font-size:16px;
+font-weight:600;
+color:#5a3a00;
+line-height:1.6;
+text-align:center;
+}
+
 /* IMAGE BOX */
 .announce-image-box{
-background:linear-gradient(to right,#fff5e6,#ffe0b2); /* match site */
+background:linear-gradient(to right,#fff5e6,#ffe0b2);
 padding:10px;
 border-radius:10px;
 text-align:center;
@@ -173,11 +177,15 @@ max-width:600px;
 border-radius:10px;
 }
 
-/* BUTTONS */
+/* CENTER BUTTONS */
 .announce-controls{
-margin-top:10px;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-wrap:wrap;
 }
 
+/* BUTTON */
 .announce-controls button{
 margin:5px;
 padding:8px 14px;
@@ -214,7 +222,6 @@ border-radius:50%;
 .left{left:10px;}
 .right{right:10px}
 
-/* FOOTER */
 footer{
 text-align:center;
 padding:15px;
