@@ -73,14 +73,11 @@ nav a{
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
-  color:white;
-  font-size:20px;
-  text-shadow:0 0 10px black;
+  color:#FFD700;
+  font-size:clamp(14px, 5vw, 22px); /* ?? auto adjust for mobile */
+  text-shadow:2px 2px 6px rgba(0,0,0,0.8);
 
-  white-space: nowrap;        /* 🔥 prevents line break */
-  overflow: hidden;           /* hides overflow */
-  text-overflow: ellipsis;    /* optional: adds ... if too long */
-}
+  white-space: nowrap;   /* ?? keep single line */
 }
 
 /* ================= MARQUEE ================= */
@@ -401,7 +398,7 @@ footer{
 /* ================= CALL ================= */
 .call-float{
   position:fixed;
-  bottom:85px; /* 👈 above WhatsApp */
+  bottom:85px; /* ?? above WhatsApp */
   right:20px;
   width:55px;
   height:55px;
