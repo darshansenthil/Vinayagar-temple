@@ -213,12 +213,12 @@ async function loadContent(){
         tamil ? item.content_ta : item.content_en;
     }
 
-    if(item.section === "address"){
-      document.getElementById("address_text").innerText =
-        tamil
-          ? (item.address_ta || "Loading...")
-          : (item.address_en || "Loading...");
-    }
+    if(item.section === "contact"){
+  document.getElementById("address_text").innerText =
+    tamil
+      ? (item.address_ta || "Loading...")
+      : (item.address_en || "Loading...");
+}
 
     if(item.section === "contact"){
       document.getElementById("contact_text").innerText =
