@@ -76,6 +76,11 @@ nav a{
   color:white;
   font-size:20px;
   text-shadow:0 0 10px black;
+
+  white-space: nowrap;        /* 🔥 prevents line break */
+  overflow: hidden;           /* hides overflow */
+  text-overflow: ellipsis;    /* optional: adds ... if too long */
+}
 }
 
 /* ================= MARQUEE ================= */
